@@ -15,8 +15,9 @@ public class ClientRequest extends Thread{
 		try {
 			DataInputStream in = new DataInputStream(this.socket.getInputStream());
 			DataOutputStream out=new DataOutputStream(this.socket.getOutputStream());
-			String str=in.readUTF();
-			String[] tmp=str.split("#");
+			System.out.println(in.readUTF());
+			System.out.println(in.readUTF());
+			//String[] tmp=str.split("#");
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

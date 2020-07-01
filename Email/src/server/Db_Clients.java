@@ -7,4 +7,7 @@ public class Db_Clients {
 	public Db_Clients() {
 		clients=new ArrayList<ClientAcount>();
 	}
+	public void addAcount(ClientAcount acount) {
+		clients.add(acount);
+	}
 }

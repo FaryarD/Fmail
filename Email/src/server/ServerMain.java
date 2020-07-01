@@ -9,7 +9,7 @@ public class ServerMain {
 		System.out.println("Server started;)");
 		ServerSocket server=null;
 		try {
-			server=new ServerSocket(12);
+			server=new ServerSocket(1024);
 			while(true) {
 				Socket socket=server.accept();
 				ClientRequest req=new ClientRequest(socket);
