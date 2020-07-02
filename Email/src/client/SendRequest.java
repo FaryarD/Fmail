@@ -6,33 +6,109 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class SendRequest {
-	public enum Requests{SIGNUP};
-	private Requests req;
+import javax.swing.JOptionPane;
+
+public class SendRequest extends Thread{
+	public static final byte REQ_SIGNUP=52;
+	public static final byte REQ_LOGIN=53;
+	public static final byte REQ_GETNAME=54;
+	public static final byte ANS_CONNECTIONPROB=89;
+	public static final byte ANS_NACK=90;
+	public static final byte ANS_ACK=91;
+	public static final byte ANS_USR_DUP=92;
 	private Socket socket;
 	private DataInputStream in;
 	private DataOutputStream out;
-	public SendRequest(Requests req) {
+	public boolean is_ready=false;
+	byte req;
+	Object obj;
+	Acount acount;
+	public SendRequest(Object obj,byte req,Acount acount) {
+		this.obj=obj;
 		this.req=req;
-		Socket socket;
-		try {
-			socket = new Socket("127.0.0.1", 1024);
-			in = new DataInputStream(socket.getInputStream());
-			out=new DataOutputStream(socket.getOutputStream());
-			out.writeUTF(req+"");
-		} catch (UnknownHostException e) {
-		} catch (IOException e) {}
+		this.acount=acount;
+		
+		is_ready=false;
 	}
-	public void send(String str) {
+	public void run() {
+		int i=0;
+		
+		while(is_ready==false && i<1000) {
+			try {
+				socket = new Socket("127.0.0.1", 1025);
+				in = new DataInputStream(socket.getInputStream());
+				out=new DataOutputStream(socket.getOutputStream());
+				if(socket.isConnected()) {
+					out.writeByte(req);
+					if(in.readByte()==ANS_ACK) {
+						is_ready=true;
+					}
+				}
+			} catch (IOException e) {}
+			
+			i++;
+		}
+		if(is_ready) {
+			if(req==REQ_SIGNUP) {
+				SignUp signup_p=(SignUp) obj;
+				byte ans=sendSignUpInfo(acount.getUsr_name(), acount.getPassword(), acount.getName());
+				switch (ans) {
+				case SendRequest.ANS_ACK:
+					signup_p.server_permission(true);
+					break;
+				case SendRequest.ANS_USR_DUP:
+					signup_p.server_permission(false);
+					break;
+				}
+			}
+			else if(req==REQ_LOGIN) {
+				StartMenu start_menu=(StartMenu) obj;
+				if(sendLogInInfo(acount.getUsr_name(), acount.getPassword())==SendRequest.ANS_ACK) {
+					start_menu.server_permission(true);
+				}
+				else {
+					start_menu.server_permission(false);
+				}
+			}
+			
+				
+		}
+		else {
+			infoBox("1.sever may be down(contact with supervisors)\n2.Check Your Internet Connection", "Connection Faild!!!");
+		}
+	}
+	public void sendSTR(String str) {
 		try {
 			out.writeUTF(str);
 		} catch (IOException e) {}
 	}
-	public String read() {
+	public String readSTR() {
 		String str="";
 		try {
 			 str=in.readUTF();
 		} catch (IOException e) {}
 		return str;
 	}
+	public byte readByte() {
+		byte ans=ANS_CONNECTIONPROB;
+		try {
+			ans=in.readByte();
+		} catch (IOException e) {}	
+		return ans;
+	}
+	public byte sendSignUpInfo(String usr_name,String pass,String name) {
+		String str=usr_name+" ; "+pass+" ; "+name;
+		sendSTR(str);
+		return readByte();
+	}
+	public byte sendLogInInfo(String usr_name,String pass) {
+		String str=usr_name+" ; "+pass;
+		sendSTR(str);
+		byte out=readByte();
+		return out;
+	}
+	 public static void infoBox(String infoMessage, String titleBar)
+	    {
+	        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
+	    }
 }

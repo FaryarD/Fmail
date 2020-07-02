@@ -24,7 +24,13 @@ public class SignUp extends JFrame {
 	private StartMenu start_menu;
 
 	private JLabel warning_text;
+	private Acount acount=null;
+	private String usr_name,pass,name;
+	private SignUp self=this;
 	public SignUp(StartMenu start_menu) {
+		usr_name=new String("f");
+		pass=new String("1234");
+		name=new String("s");
 		this.start_menu=start_menu;
 		setBackground(Color.DARK_GRAY);
 		setResizable(false);
@@ -40,7 +46,7 @@ public class SignUp extends JFrame {
 		JButton cancel_btn = new JButton("Cancel");
 		cancel_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				cancelButton();
+				backToMenu();
 			}
 		});
 		cancel_btn.setBackground(Color.LIGHT_GRAY);
@@ -50,7 +56,9 @@ public class SignUp extends JFrame {
 		JButton signup_btn = new JButton("Sign Up");
 		signup_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				SendRequest send_req=new SendRequest(SendRequest.Requests.SIGNUP);
+				acount=new Acount(name, usr_name, pass);
+				SendRequest send_req=new SendRequest(self,SendRequest.REQ_SIGNUP , acount);
+				send_req.start();
 			}
 		});
 		signup_btn.setBackground(Color.LIGHT_GRAY);
@@ -93,11 +101,25 @@ public class SignUp extends JFrame {
 		warning_text.setBounds(33, 98, 278, 25);
 		contentPane.add(warning_text);
 	}
-	private void cancelButton() {
+	private void backToMenu() {
 		start_menu.setVisible(true);
 		setVisible(false);
 	}
 	private boolean check_usrName(String usr_name) {
 		return false;
+	}
+	public Acount getAcount() {
+		return acount;
+	}
+	public void server_permission(boolean state) {
+		if(state) {
+		
+			start_menu.is_SignedUp();
+			setVisible(false);
+		}
+		else {
+			warning_text.setText("User name is not available.Please choose another one.");
+			acount=null;
+		}
 	}
 }

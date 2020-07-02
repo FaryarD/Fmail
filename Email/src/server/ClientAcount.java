@@ -9,4 +9,13 @@ public class ClientAcount {
 		this.usr_name=usr_name;
 		this.password=password;
 	}
+	public String getName() {
+		return name;
+	}
+	public String getUsr_name() {
+		return usr_name;
+	}
+	public String getPassword() {
+		return password;
+	}
 }
