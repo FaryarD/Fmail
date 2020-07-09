@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import client.Acount;
+
 public class ClientRequest extends Thread{
 	public static final byte REQ_SIGNUP=52;
 	public static final byte REQ_LOGIN=53;
@@ -17,7 +19,9 @@ public class ClientRequest extends Thread{
 	private Db_Clients db=null;
 	private DataInputStream in;
 	private DataOutputStream out;
-	public ClientRequest(Socket socket,Db_Clients db) {
+	Db_readWrite db_rw;
+	public ClientRequest(Socket socket,Db_Clients db,Db_readWrite db_rw) {
+		this.db_rw=db_rw;
 		this.socket=socket;
 		this.db=db;
 	}
@@ -38,7 +42,7 @@ public class ClientRequest extends Thread{
 				break;
 			case REQ_GETNAME:
 				sendByte(ANS_ACK);
-				
+				sendName();
 				break;
 				
 			}
@@ -59,6 +63,7 @@ public class ClientRequest extends Thread{
 			db.addAcount(new ClientAcount(data[2], data[0], data[1]));
 			System.out.println("New Acount added,Usr_name: "+ data[0]);
 			sendByte(ANS_ACK);
+			db_rw.saveDb();
 			
 		}
 	}
@@ -78,6 +83,18 @@ public class ClientRequest extends Thread{
 		}
 		else sendByte(ANS_NACK);
 	}
+	private void sendName() {
+		String[] data=readSTR().split(" ; ");
+		if(data.length==2) {
+			ClientAcount acount=db.getAcount(data[0],data[1]);
+				sendSTR(acount.getName());
+			}
+			else {
+				
+				sendByte(ANS_NACK);
+				
+			}
+	}
 	private String readSTR() {
 		String str=new String();
 		try {
@@ -86,6 +103,14 @@ public class ClientRequest extends Thread{
 			e.printStackTrace();
 		}
 		return str;
+	}
+	private void sendSTR(String str) {
+		
+		try {
+			out.writeUTF(str);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	private void sendByte(byte b) {
 		try {

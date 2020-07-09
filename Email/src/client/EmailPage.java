@@ -30,6 +30,7 @@ public class EmailPage extends JFrame {
 		menu_bar=new JMenuBar();
 		this.getContentPane().add(menu_bar, BorderLayout.PAGE_START);
 		SendRequest getName=new SendRequest(this, SendRequest.REQ_GETNAME, acount);
+		getName.start();
 		menu_bar.add(new JSeparator());
 		profile_name=new JMenuItem(acount.getName());
 		

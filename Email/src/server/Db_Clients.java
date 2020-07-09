@@ -2,7 +2,7 @@ package server;
 
 import java.util.ArrayList;
 
-import client.Acount;
+
 
 public class Db_Clients {
 	private ArrayList<ClientAcount>clients;
@@ -11,6 +11,13 @@ public class Db_Clients {
 	}
 	public void addAcount(ClientAcount acount) {
 		clients.add(acount);
+	}
+	public String toString() {
+		String out=new String();
+		for(int i=0;i<clients.size();i++) {
+			out+=clients.get(i).getName()+"\n";
+		}
+		return out;
 	}
 	public boolean is_usrName_exist(String usr_name) {
 		boolean out=false;

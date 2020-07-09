@@ -71,7 +71,7 @@ public class SendRequest extends Thread{
 				}
 			}
 			else if(req==REQ_GETNAME) {
-				Acount acount= (Acount)obj;
+				EmailPage email_p=(EmailPage) obj;
 				acount.setName(readSTR());
 			}
 			
