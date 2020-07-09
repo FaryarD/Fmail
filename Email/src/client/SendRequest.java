@@ -22,7 +22,7 @@ public class SendRequest extends Thread{
 	public boolean is_ready=false;
 	byte req;
 	Object obj;
-	Acount acount;
+	private Acount acount;
 	public SendRequest(Object obj,byte req,Acount acount) {
 		this.obj=obj;
 		this.req=req;
@@ -51,7 +51,7 @@ public class SendRequest extends Thread{
 		if(is_ready) {
 			if(req==REQ_SIGNUP) {
 				SignUp signup_p=(SignUp) obj;
-				byte ans=sendSignUpInfo(acount.getUsr_name(), acount.getPassword(), acount.getName());
+				byte ans=sendSignUpInfo();
 				switch (ans) {
 				case SendRequest.ANS_ACK:
 					signup_p.server_permission(true);
@@ -63,7 +63,7 @@ public class SendRequest extends Thread{
 			}
 			else if(req==REQ_LOGIN) {
 				StartMenu start_menu=(StartMenu) obj;
-				if(sendLogInInfo(acount.getUsr_name(), acount.getPassword())==SendRequest.ANS_ACK) {
+				if(sendLogInInfo()==SendRequest.ANS_ACK) {
 					start_menu.server_permission(true);
 				}
 				else {
@@ -72,7 +72,10 @@ public class SendRequest extends Thread{
 			}
 			else if(req==REQ_GETNAME) {
 				EmailPage email_p=(EmailPage) obj;
-				acount.setName(readSTR());
+				if(sendLogInInfo()==ANS_ACK) {
+					acount.setName(readSTR());
+					email_p.refresh_profileName();
+				}
 			}
 			
 				
@@ -100,17 +103,27 @@ public class SendRequest extends Thread{
 		} catch (IOException e) {}	
 		return ans;
 	}
-	public byte sendSignUpInfo(String usr_name,String pass,String name) {
-		String str=usr_name+" ; "+pass+" ; "+name;
-		sendSTR(str);
-		return readByte();
-	}
-	public byte sendLogInInfo(String usr_name,String pass) {
-		String str=usr_name+" ; "+pass;
-		sendSTR(str);
-		byte out=readByte();
+	public byte sendSignUpInfo() {
+		byte out=ANS_CONNECTIONPROB;
+		try {
+			String str=acount.getUsr_name()+" ; "+acount.getPassword()+" ; "+acount.getName();
+			sendSTR(str);
+			out=readByte();
+		} catch (Exception e) {}
+		
 		return out;
 	}
+	public byte sendLogInInfo() {
+		byte out=ANS_CONNECTIONPROB;
+		try {
+			String str=acount.getUsr_name()+" ; "+acount.getPassword();
+			sendSTR(str);
+			out=readByte();
+			
+		} catch (Exception e) {}
+		return out;
+	}
+	
 	 public static void infoBox(String infoMessage, String titleBar)
 	    {
 	        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);

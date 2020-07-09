@@ -1,6 +1,12 @@
 package server;
 
-public class ClientAcount {
+import java.io.Serializable;
+
+public class ClientAcount implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8301053891754985919L;
 	private String name;
 	private String usr_name;
 	private String password;
@@ -17,5 +23,8 @@ public class ClientAcount {
 	}
 	public String getPassword() {
 		return password;
+	}
+	public String toString() {
+		return "name : "+name+"\tuser name: "+usr_name;
 	}
 }

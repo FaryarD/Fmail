@@ -1,10 +1,15 @@
 package server;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
 
-public class Db_Clients {
+public class Db_Clients implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6322456842046159481L;
 	private ArrayList<ClientAcount>clients;
 	public Db_Clients() {
 		clients=new ArrayList<ClientAcount>();
@@ -15,7 +20,7 @@ public class Db_Clients {
 	public String toString() {
 		String out=new String();
 		for(int i=0;i<clients.size();i++) {
-			out+=clients.get(i).getName()+"\n";
+			out+=clients.get(i).toString()+"\n";
 		}
 		return out;
 	}

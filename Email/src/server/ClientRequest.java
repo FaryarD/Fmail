@@ -41,6 +41,7 @@ public class ClientRequest extends Thread{
 				logIn();
 				break;
 			case REQ_GETNAME:
+				System.out.println(" getName_REQ");
 				sendByte(ANS_ACK);
 				sendName();
 				break;
@@ -72,7 +73,7 @@ public class ClientRequest extends Thread{
 		if(data.length==2) {
 			if(db.checkToLogin(data[0],data[1])) {
 				sendByte(ANS_ACK);
-				System.out.println(data[0]+" have logined.");
+				System.out.println(data[0]+" : Logined");
 			}
 			else {
 				
@@ -85,9 +86,18 @@ public class ClientRequest extends Thread{
 	}
 	private void sendName() {
 		String[] data=readSTR().split(" ; ");
+		System.out.println(data[0]+data[1]);
 		if(data.length==2) {
 			ClientAcount acount=db.getAcount(data[0],data[1]);
-				sendSTR(acount.getName());
+				
+				if(acount==null) {
+					sendByte(ANS_NACK);
+				}
+				else {
+					sendByte(ANS_ACK);
+					System.out.println(acount.getUsr_name()+" : getName_REQ");
+					sendSTR(acount.getName());
+				}
 			}
 			else {
 				

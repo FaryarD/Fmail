@@ -26,8 +26,4 @@ public class Acount {
 	public String getPassword() {
 		return password;
 	}
-	public void LoadName() {
-		SendRequest send_req=new SendRequest(this,SendRequest.REQ_GETNAME,this);
-		send_req.start();
-	}
 }
