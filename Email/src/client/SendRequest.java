@@ -70,6 +70,10 @@ public class SendRequest extends Thread{
 					start_menu.server_permission(false);
 				}
 			}
+			else if(req==REQ_GETNAME) {
+				Acount acount= (Acount)obj;
+				acount.setName(readSTR());
+			}
 			
 				
 		}

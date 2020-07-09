@@ -2,6 +2,8 @@ package server;
 
 import java.util.ArrayList;
 
+import client.Acount;
+
 public class Db_Clients {
 	private ArrayList<ClientAcount>clients;
 	public Db_Clients() {
@@ -25,6 +27,17 @@ public class Db_Clients {
 			if(clients.get(i).getUsr_name().equals(usr_name)) {
 				if(clients.get(i).getPassword().equals(pass)) {
 					out=true;
+				}
+			}
+		}
+		return out;
+	}
+	public ClientAcount getAcount(String usr_name,String pass) {
+		ClientAcount out=null;
+		for(int i=0;i<clients.size();i++) {
+			if(clients.get(i).getUsr_name().equals(usr_name)) {
+				if(clients.get(i).getPassword().equals(pass)) {
+					out=clients.get(i);
 				}
 			}
 		}

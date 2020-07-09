@@ -10,11 +10,15 @@ public class Acount {
 		this.password=password;
 	}
 	public Acount(String usr_name,String password) {
+		this.name="None";
 		this.usr_name=usr_name;
 		this.password=password;
 	}
 	public String getName() {
 		return name;
+	}
+	public void setName(String name) {
+		this.name=name;
 	}
 	public String getUsr_name() {
 		return usr_name;

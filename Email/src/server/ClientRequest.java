@@ -36,6 +36,10 @@ public class ClientRequest extends Thread{
 				sendByte(ANS_ACK);
 				logIn();
 				break;
+			case REQ_GETNAME:
+				sendByte(ANS_ACK);
+				
+				break;
 				
 			}
 			//System.out.println(in.readUTF());
