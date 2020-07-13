@@ -3,6 +3,8 @@ package server;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import profile.Acount;
+
 
 
 public class Db_Clients implements Serializable {
@@ -10,11 +12,11 @@ public class Db_Clients implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 6322456842046159481L;
-	private ArrayList<ClientAcount>clients;
+	private ArrayList<Acount>clients;
 	public Db_Clients() {
-		clients=new ArrayList<ClientAcount>();
+		clients=new ArrayList<Acount>();
 	}
-	public void addAcount(ClientAcount acount) {
+	public void addAcount(Acount acount) {
 		clients.add(acount);
 	}
 	public String toString() {
@@ -44,8 +46,8 @@ public class Db_Clients implements Serializable {
 		}
 		return out;
 	}
-	public ClientAcount getAcount(String usr_name,String pass) {
-		ClientAcount out=null;
+	public Acount getAcount(String usr_name,String pass) {
+		Acount out=null;
 		for(int i=0;i<clients.size();i++) {
 			if(clients.get(i).getUsr_name().equals(usr_name)) {
 				if(clients.get(i).getPassword().equals(pass)) {

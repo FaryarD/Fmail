@@ -11,6 +11,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
+
+import profile.Acount;
+
 import javax.swing.JToolBar;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -36,6 +39,7 @@ public class EmailPage extends JFrame {
 	private JButton receivedMSG_btn;
 	private JButton sentMSG_btn;
 	private JButton send_btn;
+	private JButton log_out;
 	public EmailPage(StartMenu start_menu,Acount acount) {
 		this.acount=acount;
 		//acount.receiveName();
@@ -49,7 +53,7 @@ public class EmailPage extends JFrame {
 		menu_bar=new JMenuBar();
 		this.getContentPane().add(menu_bar, BorderLayout.PAGE_START);
 		
-		left_sidebar = new JToolBar("sda",1);
+		left_sidebar = new JToolBar("",1);
 		send_btn=new JButton("New");
 		send_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -58,9 +62,17 @@ public class EmailPage extends JFrame {
 		});
 		receivedMSG_btn=new JButton("Recieved");
 		sentMSG_btn=new JButton("Sent");
+		log_out=new JButton("Log Out");
+		log_out.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
+				start_menu.logOut();
+			}
+		});
 		left_sidebar.add(send_btn);
 		left_sidebar.add(receivedMSG_btn);
 		left_sidebar.add(sentMSG_btn);
+		left_sidebar.add(log_out);
 		contentPane.add(left_sidebar, BorderLayout.WEST);
 		SendRequest getName_req=new SendRequest(this, SendRequest.REQ_GETNAME, acount);
 		getName_req.start();

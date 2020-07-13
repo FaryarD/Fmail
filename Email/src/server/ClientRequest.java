@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import client.Acount;
+import profile.Acount;
 
 public class ClientRequest extends Thread{
 	public static final byte REQ_SIGNUP=52;
@@ -61,7 +61,7 @@ public class ClientRequest extends Thread{
 			sendByte(ANS_USR_DUP);
 		}
 		else {
-			db.addAcount(new ClientAcount(data[2], data[0], data[1]));
+			db.addAcount(new Acount(data[2], data[0], data[1]));
 			System.out.println("New Acount added,Usr_name: "+ data[0]);
 			sendByte(ANS_ACK);
 			db_rw.saveDb();
@@ -88,7 +88,7 @@ public class ClientRequest extends Thread{
 		String[] data=readSTR().split(" ; ");
 		System.out.println(data[0]+data[1]);
 		if(data.length==2) {
-			ClientAcount acount=db.getAcount(data[0],data[1]);
+			Acount acount=db.getAcount(data[0],data[1]);
 				
 				if(acount==null) {
 					sendByte(ANS_NACK);

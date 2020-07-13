@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 
+import profile.Acount;
 public class SignUp extends JFrame {
 
 	private JPanel contentPane;

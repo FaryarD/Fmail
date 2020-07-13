@@ -1,6 +1,7 @@
 package client;
 
 import java.awt.BorderLayout;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -19,6 +20,7 @@ import javax.swing.JPasswordField;
 import java.awt.Font;
 import java.awt.Color;
 
+import profile.Acount;
 public class StartMenu extends JFrame {
 
 	private JPanel contentPane;
@@ -108,6 +110,10 @@ public class StartMenu extends JFrame {
 		email_page=new EmailPage(this, acount);
 		email_page.setVisible(true);
 		setVisible(false);
+	}
+	public void logOut() {
+		acount=null;
+		setVisible(true);
 	}
 	public void server_permission(boolean per) {
 		if(per) {

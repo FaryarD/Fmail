@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
+import profile.Acount;
 public class SendRequest extends Thread{
 	public static final byte REQ_SIGNUP=52;
 	public static final byte REQ_LOGIN=53;

@@ -1,6 +1,12 @@
-package client;
+package profile;
 
-public class Acount {
+import java.io.Serializable;
+
+public class Acount implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7285872682565775115L;
 	private String name;
 	private String usr_name;
 	private String password;
@@ -25,5 +31,8 @@ public class Acount {
 	}
 	public String getPassword() {
 		return password;
+	}
+	public String toString() {
+		return "name : "+name+" | "+"user name : "+usr_name;
 	}
 }
