@@ -9,7 +9,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import profile.Acount;
@@ -40,6 +42,10 @@ public class EmailPage extends JFrame {
 	private JButton sentMSG_btn;
 	private JButton send_btn;
 	private JButton log_out;
+	private JScrollPane info_panel;
+	private JTable j;
+	private String[][] table_data;
+	private String[] columnNames = { "From", "Subject"};
 	public EmailPage(StartMenu start_menu,Acount acount) {
 		this.acount=acount;
 		//acount.receiveName();
@@ -50,6 +56,14 @@ public class EmailPage extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		
+		String[][] data=new String[1][2];
+		data[0][0]="hello";
+		data[0][1]="dd";
+		  
+		j = new JTable(data, columnNames); 
+		j.setBounds(30, 40, 200, 300); 
+		        
 		menu_bar=new JMenuBar();
 		this.getContentPane().add(menu_bar, BorderLayout.PAGE_START);
 		
@@ -60,8 +74,13 @@ public class EmailPage extends JFrame {
 				
 			}
 		});
-		receivedMSG_btn=new JButton("Recieved");
-		sentMSG_btn=new JButton("Sent");
+		receivedMSG_btn=new JButton("Inbox");
+		receivedMSG_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		sentMSG_btn=new JButton("Outbox");
 		log_out=new JButton("Log Out");
 		log_out.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -74,6 +93,10 @@ public class EmailPage extends JFrame {
 		left_sidebar.add(sentMSG_btn);
 		left_sidebar.add(log_out);
 		contentPane.add(left_sidebar, BorderLayout.WEST);
+		
+		
+		info_panel = new JScrollPane(j);
+		contentPane.add(info_panel, BorderLayout.CENTER);
 		SendRequest getName_req=new SendRequest(this, SendRequest.REQ_GETNAME, acount);
 		getName_req.start();
 	
