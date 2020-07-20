@@ -10,6 +10,7 @@ public class Acount implements Serializable{
 	private String name;
 	private String usr_name;
 	private String password;
+	private Inbox inbox;
 	public Acount(String name,String usr_name,String password) {
 		this.name=name;
 		this.usr_name=usr_name;
@@ -19,6 +20,9 @@ public class Acount implements Serializable{
 		this.name="None";
 		this.usr_name=usr_name;
 		this.password=password;
+	}
+	public Inbox getInbox() {
+		return inbox;
 	}
 	public String getName() {
 		return name;

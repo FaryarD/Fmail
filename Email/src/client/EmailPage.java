@@ -13,11 +13,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import profile.Acount;
 
 import javax.swing.JToolBar;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
 import javax.swing.JTextField;
@@ -43,11 +45,13 @@ public class EmailPage extends JFrame {
 	private JButton send_btn;
 	private JButton log_out;
 	private JScrollPane info_panel;
-	private JTable j;
-	private String[][] table_data;
-	private String[] columnNames = { "From", "Subject"};
+	private JTable table;
+	private DefaultTableModel table_data = new DefaultTableModel(0, 0);
+	private String[] column_names = { "Welcome to Fmail"};
 	public EmailPage(StartMenu start_menu,Acount acount) {
+		EmailPage self=this;
 		this.acount=acount;
+	
 		//acount.receiveName();
 		//System.out.println(acount.getName());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,13 +61,12 @@ public class EmailPage extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
-		String[][] data=new String[1][2];
-		data[0][0]="hello";
-		data[0][1]="dd";
-		  
-		j = new JTable(data, columnNames); 
-		j.setBounds(30, 40, 200, 300); 
-		        
+		column_names=new String[1];
+		column_names[0]="Welcome To Fmail!";
+		table_data.setColumnIdentifiers(column_names);
+		table = new JTable(); 
+		table.setBounds(30, 40, 200, 300); 
+		table.setModel(table_data);
 		menu_bar=new JMenuBar();
 		this.getContentPane().add(menu_bar, BorderLayout.PAGE_START);
 		
@@ -77,7 +80,11 @@ public class EmailPage extends JFrame {
 		receivedMSG_btn=new JButton("Inbox");
 		receivedMSG_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				column_names[0]="Fetching Data...";
+				table_data.setColumnIdentifiers(column_names);
+				table.repaint();
+				SendRequest req_inbox_info=new SendRequest(self,SendRequest.REQ_GETINBOXINFO, acount);
+				req_inbox_info.start();
 			}
 		});
 		sentMSG_btn=new JButton("Outbox");
@@ -86,6 +93,7 @@ public class EmailPage extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				setVisible(false);
 				start_menu.logOut();
+				
 			}
 		});
 		left_sidebar.add(send_btn);
@@ -94,8 +102,7 @@ public class EmailPage extends JFrame {
 		left_sidebar.add(log_out);
 		contentPane.add(left_sidebar, BorderLayout.WEST);
 		
-		
-		info_panel = new JScrollPane(j);
+		info_panel = new JScrollPane(table);
 		contentPane.add(info_panel, BorderLayout.CENTER);
 		SendRequest getName_req=new SendRequest(this, SendRequest.REQ_GETNAME, acount);
 		getName_req.start();
@@ -110,6 +117,16 @@ public class EmailPage extends JFrame {
 	
 			
 	
+	}
+	public void refreshTable(String []title_names, String data[][]) {
+		if(title_names!=null && data!=null) {
+			table_data.setColumnIdentifiers(title_names);
+			for(int i=0;i<data.length;i++) {
+				table_data.addRow(data[i]);
+			}
+		}
+	
+		table.repaint();
 	}
 
 }

@@ -13,6 +13,7 @@ public class SendRequest extends Thread{
 	public static final byte REQ_SIGNUP=52;
 	public static final byte REQ_LOGIN=53;
 	public static final byte REQ_GETNAME=54;
+	public static final byte REQ_GETINBOXINFO=55;
 	public static final byte ANS_CONNECTIONPROB=89;
 	public static final byte ANS_NACK=90;
 	public static final byte ANS_ACK=91;
@@ -76,6 +77,12 @@ public class SendRequest extends Thread{
 				if(sendLogInInfo()==ANS_ACK) {
 					acount.setName(readSTR());
 					email_p.refresh_profileName();
+				}
+			}
+			else if(req==REQ_GETINBOXINFO) {
+				EmailPage email_p=(EmailPage)obj;
+				if(sendLogInInfo()==ANS_ACK) {
+					
 				}
 			}
 			
