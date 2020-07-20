@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import profile.Acount;
+import profile.MessageInfo;
 
 import javax.swing.JToolBar;
 import java.awt.event.ActionListener;
@@ -118,13 +119,15 @@ public class EmailPage extends JFrame {
 			
 	
 	}
-	public void refreshTable(String []title_names, String data[][]) {
-		if(title_names!=null && data!=null) {
-			table_data.setColumnIdentifiers(title_names);
-			for(int i=0;i<data.length;i++) {
-				table_data.addRow(data[i]);
+	public void refreshTable_inbox(boolean flg) {
+		if(flg==true) {
+			table_data.setColumnIdentifiers(new String[] {"Sender","Subject"});
+			ArrayList<MessageInfo>msg_info=acount.getInbox().getAllMessageInfo();
+			for(int i=0;i<msg_info.size();i++) {
+				table_data.addRow(msg_info.get(i).getDataForTable());
 			}
 		}
+		
 	
 		table.repaint();
 	}

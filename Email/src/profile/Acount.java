@@ -39,4 +39,7 @@ public class Acount implements Serializable{
 	public String toString() {
 		return "name : "+name+" | "+"user name : "+usr_name;
 	}
+	public void addToInbox(Message msg) {
+		inbox.addMessage(msg);
+	}
 }

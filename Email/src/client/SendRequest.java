@@ -3,12 +3,15 @@ package client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
 import profile.Acount;
+import profile.Inbox;
+import profile.MessageInfo;
 public class SendRequest extends Thread{
 	public static final byte REQ_SIGNUP=52;
 	public static final byte REQ_LOGIN=53;
@@ -82,7 +85,14 @@ public class SendRequest extends Thread{
 			else if(req==REQ_GETINBOXINFO) {
 				EmailPage email_p=(EmailPage)obj;
 				if(sendLogInInfo()==ANS_ACK) {
-					
+					Inbox inbox=(Inbox) readObj();
+					if(inbox==null) {
+						email_p.refreshTable_inbox(false);
+					}
+					else {
+						email_p.refreshTable_inbox(true);
+						
+					}
 				}
 			}
 			
@@ -103,6 +113,17 @@ public class SendRequest extends Thread{
 			 str=in.readUTF();
 		} catch (IOException e) {}
 		return str;
+	}
+	public Object readObj() {
+		Object obj=null;
+		ObjectInputStream in_obj;
+		try {
+			in_obj = new ObjectInputStream(socket.getInputStream());
+			obj=in_obj.readObject();
+		} catch (IOException e) {}
+		catch (ClassNotFoundException e) {}
+		
+		return obj;
 	}
 	public byte readByte() {
 		byte ans=ANS_CONNECTIONPROB;
