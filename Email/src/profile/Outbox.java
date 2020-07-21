@@ -3,11 +3,14 @@ package profile;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Inbox implements Serializable{
+public class Outbox implements Serializable{
 
-	private static final long serialVersionUID = -1328989554186411612L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3780846712092073732L;
 	private ArrayList<Message>messages=new ArrayList<Message>();
-	public Inbox() {
+	public Outbox() {
 		messages=new ArrayList<Message>();
 	}
 	public void addMessage(Message msg) {

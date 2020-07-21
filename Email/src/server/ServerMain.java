@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import profile.Acount;
 import profile.Message;
 import profile.MessageInfo;
 
@@ -24,7 +25,10 @@ public class ServerMain {
 		db=db_rw.getDb();
 		ServerSocket server=null;
 		System.out.println(db.toString());
-		db.getAcount("f", "1234").addToInbox(new Message("sshshshsfsf",new MessageInfo("dd", "f", "subject1")));
+		/*Acount h=db.getAcount("f", "1234");
+		Message msg=new Message("hello", new MessageInfo("me", "f", "hey"));
+		h.addToInbox(msg,db_rw);
+		System.out.println(h.getInbox().getAllMessageInfo().get(0).getDataForTable()[0]);*/
 		try {
 			server=new ServerSocket(port);
 			System.out.println("Server Started at port "+port);

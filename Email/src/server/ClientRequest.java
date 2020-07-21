@@ -3,18 +3,26 @@ package server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import profile.Acount;
+import profile.Message;
 
 public class ClientRequest extends Thread{
 	public static final byte REQ_SIGNUP=52;
 	public static final byte REQ_LOGIN=53;
 	public static final byte REQ_GETNAME=54;
+	public static final byte REQ_GETINBOXINFO=55;
+	public static final byte REQ_GETOUTBOXINFO=56;
+	public static final byte REQ_SENDMSG=57;
+	public static final byte REQ_CHANGESPECS=58;
 	public static final byte ANS_CONNECTIONPROB=89;
 	public static final byte ANS_NACK=90;
 	public static final byte ANS_ACK=91;
 	public static final byte ANS_USR_DUP=92;
+	public static final byte ANS_USER_NOTFOUND=93; 
 	private Socket socket;
 	private Db_Clients db=null;
 	private DataInputStream in;
@@ -26,7 +34,7 @@ public class ClientRequest extends Thread{
 		this.db=db;
 	}
 	public void run() {
-		
+		Acount acount;
 		try {
 			in = new DataInputStream(this.socket.getInputStream());
 			out=new DataOutputStream(this.socket.getOutputStream());
@@ -43,7 +51,65 @@ public class ClientRequest extends Thread{
 			case REQ_GETNAME:
 				System.out.println(" getName_REQ");
 				sendByte(ANS_ACK);
-				sendName();
+				acount=checkAcount();
+				sendName(acount);
+				break;
+			case REQ_GETINBOXINFO:
+				sendByte(ANS_ACK);
+				acount=checkAcount();
+				if(acount==null)sendByte(ANS_NACK);
+				else{
+					sendByte(ANS_ACK);
+					sendObj(acount.getInbox());
+				}
+				break;
+			case REQ_GETOUTBOXINFO:
+				sendByte(ANS_ACK);
+				acount=checkAcount();
+				if(acount==null)sendByte(ANS_NACK);
+				else{
+					sendByte(ANS_ACK);
+					sendObj(acount.getOutbox());
+				}
+				break;
+			case REQ_SENDMSG:
+				sendByte(ANS_ACK);
+				acount=checkAcount();
+				if(acount==null)sendByte(ANS_NACK);
+				else{
+					sendByte(ANS_ACK);
+					String dist_usr=readSTR();
+					Acount dist_ac=db.getAcount(dist_usr);
+					if(dist_ac==null)sendByte(ANS_NACK);
+					else {
+						sendByte(ANS_ACK);
+						Message msg=(Message) readObj();
+						
+						if(msg==null) {
+							sendByte(ANS_NACK);
+						}
+						else{
+							
+							sendByte(ANS_ACK);
+							msg.info.setTime();
+							dist_ac.addToInbox(msg);
+							acount.addToOutbox(msg);
+							db_rw.saveDb();
+						}
+						
+					}
+				}
+				break;
+			case REQ_CHANGESPECS:
+				System.out.println(" REQ_CHANGESPECS");
+				sendByte(ANS_ACK);
+				acount=checkAcount();
+				if(acount==null)sendByte(ANS_NACK);
+				else {
+					sendByte(ANS_ACK);
+					getNewInfo(acount);
+					db_rw.saveDb();
+				}
 				break;
 				
 			}
@@ -68,6 +134,15 @@ public class ClientRequest extends Thread{
 			
 		}
 	}
+	private void getNewInfo(Acount acount) {
+		String[] data=readSTR().split(" ; ");
+		if(data.length==2) {
+			acount.setName(data[1]);
+			acount.setPassword(data[0]);
+			sendByte(ANS_ACK);
+		}
+		
+	}
 	private void logIn() {
 		String[] data=readSTR().split(" ; ");
 		if(data.length==2) {
@@ -84,26 +159,41 @@ public class ClientRequest extends Thread{
 		}
 		else sendByte(ANS_NACK);
 	}
-	private void sendName() {
+	private void sendObj(Object obj) {
+		try {
+			ObjectOutputStream out_obj=new ObjectOutputStream(socket.getOutputStream());
+			out_obj.writeObject(obj);
+		} catch (IOException e) {}
+	}
+	public Object readObj() {
+		Object obj=null;
+		ObjectInputStream in_obj;
+		try {
+			in_obj = new ObjectInputStream(socket.getInputStream());
+			obj=in_obj.readObject();
+		} catch (IOException e) {}
+		catch (ClassNotFoundException e) {}
+		
+		return obj;
+	}
+	private void sendName(Acount acount) {
+		
+		if(acount==null) {
+			sendByte(ANS_NACK);
+		}
+		else {
+			sendByte(ANS_ACK);
+			System.out.println(acount.getUsr_name()+" : getName_REQ");
+			sendSTR(acount.getName());
+		}
+	}
+	private Acount checkAcount() {
+		Acount acount =null;
 		String[] data=readSTR().split(" ; ");
-		System.out.println(data[0]+data[1]);
 		if(data.length==2) {
-			Acount acount=db.getAcount(data[0],data[1]);
-				
-				if(acount==null) {
-					sendByte(ANS_NACK);
-				}
-				else {
-					sendByte(ANS_ACK);
-					System.out.println(acount.getUsr_name()+" : getName_REQ");
-					sendSTR(acount.getName());
-				}
-			}
-			else {
-				
-				sendByte(ANS_NACK);
-				
-			}
+			acount=db.getAcount(data[0],data[1]);
+		}
+		return acount;
 	}
 	private String readSTR() {
 		String str=new String();

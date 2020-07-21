@@ -4,23 +4,30 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
+import client.EmailPage.state;
 import profile.Acount;
 import profile.Inbox;
 import profile.MessageInfo;
+import profile.Outbox;
 public class SendRequest extends Thread{
 	public static final byte REQ_SIGNUP=52;
 	public static final byte REQ_LOGIN=53;
 	public static final byte REQ_GETNAME=54;
 	public static final byte REQ_GETINBOXINFO=55;
+	public static final byte REQ_GETOUTBOXINFO=56;
+	public static final byte REQ_SENDMSG=57;
+	public static final byte REQ_CHANGESPECS=58;
 	public static final byte ANS_CONNECTIONPROB=89;
 	public static final byte ANS_NACK=90;
 	public static final byte ANS_ACK=91;
 	public static final byte ANS_USR_DUP=92;
+	public static final byte ANS_USER_NOTFOUND=93; 
 	private Socket socket;
 	private DataInputStream in;
 	private DataOutputStream out;
@@ -83,17 +90,70 @@ public class SendRequest extends Thread{
 				}
 			}
 			else if(req==REQ_GETINBOXINFO) {
+				
 				EmailPage email_p=(EmailPage)obj;
 				if(sendLogInInfo()==ANS_ACK) {
+					
 					Inbox inbox=(Inbox) readObj();
+					acount.setInbox(inbox);
 					if(inbox==null) {
-						email_p.refreshTable_inbox(false);
+						email_p.setTableMode(state.Error);
 					}
 					else {
-						email_p.refreshTable_inbox(true);
+						email_p.setTableMode(state.INBOX);
 						
 					}
+					email_p.refreshTable();
 				}
+			}
+			else if(req==REQ_GETOUTBOXINFO) {
+				
+				EmailPage email_p=(EmailPage)obj;
+				if(sendLogInInfo()==ANS_ACK) {
+					
+					Outbox outbox=(Outbox) readObj();
+					acount.setOutbox(outbox);
+					if(outbox==null) {
+						email_p.setTableMode(state.Error);
+					}
+					else {
+						email_p.setTableMode(state.OUTBOX);
+						
+					}
+					email_p.refreshTable();
+				}
+			}
+			else if(req==REQ_SENDMSG) {
+				NewMessageForm msg_form=(NewMessageForm)obj;
+				byte ans=ANS_CONNECTIONPROB;
+				if(sendLogInInfo()==ANS_ACK) {
+					if(sendDistUser(msg_form.getMsg().info.reciever_usr)==ANS_ACK) {
+						sendObj(msg_form.getMsg());
+						if(readByte()==ANS_ACK) {
+							ans=ANS_ACK;
+							System.out.println("here");
+						}
+					}
+					else {
+						ans=ANS_USER_NOTFOUND;
+					}
+				}
+				System.out.println(ans);
+				msg_form.serverResposne(ans);
+				
+			}
+			else if(req==REQ_CHANGESPECS) {
+				ChangeSpecs change_p=(ChangeSpecs) obj;
+				byte ans=ANS_CONNECTIONPROB;
+				if(sendLogInInfo()==ANS_ACK) {
+					if(sendAcountInfo(change_p.getAcount_clone())==ANS_ACK) {
+						ans=ANS_ACK;
+					}
+				}
+				else {
+					ans=ANS_NACK;
+				}
+				change_p.server_ans(ans);
 			}
 			
 				
@@ -125,6 +185,12 @@ public class SendRequest extends Thread{
 		
 		return obj;
 	}
+	private void sendObj(Object obj) {
+		try {
+			ObjectOutputStream out_obj=new ObjectOutputStream(socket.getOutputStream());
+			out_obj.writeObject(obj);
+		} catch (IOException e) {}
+	}
 	public byte readByte() {
 		byte ans=ANS_CONNECTIONPROB;
 		try {
@@ -142,6 +208,16 @@ public class SendRequest extends Thread{
 		
 		return out;
 	}
+	public byte sendAcountInfo(Acount ac) {
+		byte out=ANS_CONNECTIONPROB;
+		try {
+			String str=ac.getPassword()+" ; "+ac.getName();
+			sendSTR(str);
+			out=readByte();
+		} catch (Exception e) {}
+		
+		return out;
+	}
 	public byte sendLogInInfo() {
 		byte out=ANS_CONNECTIONPROB;
 		try {
@@ -152,7 +228,15 @@ public class SendRequest extends Thread{
 		} catch (Exception e) {}
 		return out;
 	}
-	
+	private byte sendDistUser(String usr_name) {
+		byte out=ANS_CONNECTIONPROB;
+		try {
+			sendSTR(usr_name);
+			out=readByte();
+			
+		} catch (Exception e) {}
+		return out;
+	}
 	 public static void infoBox(String infoMessage, String titleBar)
 	    {
 	        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);

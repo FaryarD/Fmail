@@ -57,4 +57,13 @@ public class Db_Clients implements Serializable {
 		}
 		return out;
 	}
+	public Acount getAcount(String usr_name) {
+		Acount out=null;
+		for(int i=0;i<clients.size();i++) {
+			if(clients.get(i).getUsr_name().equals(usr_name)) {
+				out=clients.get(i);
+			}
+		}
+		return out;
+	}
 }
